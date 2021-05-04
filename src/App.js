@@ -1,7 +1,8 @@
 import React from 'react';
+import Deck from './components/Deck'
 
 const App = () => {
-  return <div>Hello</div>
+  return <Deck />
 }
 
 export default App;
