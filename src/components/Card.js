@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 /*
 TODO:
+Add start over (with confirmation)
 Add custom exercises
 Add show count
 Add historic
