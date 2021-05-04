@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
-
+/*
+TODO:
+Add custom exercises
+Add show count
+Add historic
+Add time
+*/
 
 const Card = ({ number, suit }) => {
   // const [currentNumber, setCurrentNumber] = useState(null);
   // const [currentSuit, setCurrentSuit] = useState(null);
-  const [currentCard, setCurrentCard] = useState("deck");
+  let backs = ["blue_back", "green_back", "purple_back", "gray_back", "red_back", "yellow_back"];
+  const [currentCard, setCurrentCard] = useState(backs[Math.floor(Math.random() * backs.length)]);
   const [deck, setDeck] = useState([]);
 
   const onClick = () => {
@@ -12,7 +19,7 @@ const Card = ({ number, suit }) => {
       setCurrentCard(deck.shift());
     }
     else {
-      setCurrentCard("deck");
+      setCurrentCard(backs[Math.floor(Math.random() * backs.length)]);
     }
   };
 
@@ -40,9 +47,9 @@ const Card = ({ number, suit }) => {
 }
 
 function translateTag(tag, deck) {
-  if (tag == "deck") {
+  if (tag.length > 3) {
     if (deck.length > 0) {
-      return ["deck", "start"];
+      return ["deck", "Click on the card to start"];
     }
     else {
       return ["deck", "It's over congrats!!!!"]
