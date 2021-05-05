@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Card from './Card';
-import StartOver from './StartOver';
 
 const Deck = () => {
   const [startOver, setStartOver] = useState(false);

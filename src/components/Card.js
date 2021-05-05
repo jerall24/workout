@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import  { differenceInSeconds, addSeconds, format } from 'date-fns';
 // var differenceInMilliseconds = require('date-fns/differenceInMilliseconds')
 
@@ -11,27 +11,34 @@ Add timer - make it so that it stops when you read the end of the deck and so th
 */
 
 const Card = ( { startOver, setStartOver } ) => {
-  // const [currentNumber, setCurrentNumber] = useState(null);
-  // const [currentSuit, setCurrentSuit] = useState(null);
   let backs = ["blue_back", "green_back", "purple_back", "gray_back", "red_back", "yellow_back"];
   const [currentCard, setCurrentCard] = useState(backs[Math.floor(Math.random() * backs.length)]);
   const [deck, setDeck] = useState([]);
   const [startTime, setStartTime] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(startTime);
+  const [firstClickPressed, setFirstClickPressed] = useState(false);
+  const [testEnv, setTestEnv] = useState(window.location.origin === "http://localhost:3000")
+  const timer = useRef(null);
 
 
   const onClick = () => {
+    console.log(deck.length);
     if (deck.length > 0) {
+      let desiredLength = testEnv === true ? 4 : 52;
+      if (deck.length === desiredLength) {
+        setFirstClickPressed(true);
+      }
       setCurrentCard(deck.shift());
     }
     else {
       // figure out how to stop the timer
+      clearInterval(timer.current);
       setCurrentCard(backs[Math.floor(Math.random() * backs.length)]);
     }
   };
 
-  useEffect(() => {
-    let tempDeck = getDeck();
+  useEffect((startOver, firstClick) => {
+    let tempDeck = getDeck(testEnv);
     shuffle(tempDeck);
     var cards = [];
     for (var card in tempDeck) {
@@ -39,21 +46,35 @@ const Card = ( { startOver, setStartOver } ) => {
     }
     setDeck(cards);
 
-    let secTimer = setInterval( () => {
-      setCurrentTime(new Date())
-    },1000)
-
-    if (startOver) {
+    return ()  => {
       //Reset the deck
-
+      setFirstClickPressed(false);
+      setStartOver(false);
       setStartTime(new Date());
       setCurrentTime(new Date());
-      setStartOver(false);
       setCurrentCard(backs[Math.floor(Math.random() * backs.length)]);
+    }
+  }, [startOver]);
+
+  useEffect(() => {
+    
+    if (firstClickPressed) {
+      setStartTime(new Date());
+      setFirstClickPressed(false);
+      timer.current = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 1000);
 
     }
-    return () => clearInterval(secTimer);
-  }, [startOver]);
+
+    if (startOver) {
+      return () => {
+        clearInterval(timer.current);
+        setCurrentTime(new Date());
+      }
+    }
+
+  }, [firstClickPressed, startOver])
 
 
   // <img src={`images/${currentCard}.png`} alt={currentCard} />
@@ -63,7 +84,7 @@ const Card = ( { startOver, setStartOver } ) => {
         <img src={`${process.env.PUBLIC_URL}/images/${currentCard}.png`} alt={translateTag(currentCard, deck)[0]} />
       </div>
       <div style={{textAlign:"center"}} className="content">
-        <a className="header">{translateTag(currentCard, deck)[1]}</a>
+        <a href="/#" className="header">{translateTag(currentCard, deck)[1]}</a>
         Elapsed time: {format(addSeconds(new Date(0), differenceInSeconds(currentTime, startTime)), 'mm:ss')}
       </div>
     </div>
@@ -127,18 +148,19 @@ function translateTag(tag, deck) {
       suit = "Clubs";
       exercise = "burpees";
       break;
+    default:
+      suit = "oopsie woopsie something went wrong";
+      exercise = "rest"
   }
   // return ["1", "2"]
   return [`${value} of ${suit}`, `${count} ${exercise}`];
 }
 
 //https://www.thatsoftwaredude.com/content/6196/coding-a-card-deck-in-javascript
-function getDeck()
+function getDeck(testEnv)
 {
-  // TODO: have it so that if the url is localhost then use the test values
   let values, suits;
-  if (window.location.origin == "http://localhost:3000") {
-    console.log("hi", window.location.origin)
+  if (testEnv) {
     values = ["A",2];
     suits = ["S","H"];
   }
