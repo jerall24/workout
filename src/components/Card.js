@@ -7,7 +7,7 @@ TODO:
 Add custom exercises
 Add show count
 Add historic
-Add time
+Add timer - make it so that it stops when you read the end of the deck and so that it starts only when the first time clicked
 */
 
 const Card = ( { startOver, setStartOver } ) => {
@@ -135,10 +135,18 @@ function translateTag(tag, deck) {
 //https://www.thatsoftwaredude.com/content/6196/coding-a-card-deck-in-javascript
 function getDeck()
 {
-  // const values = ["A",2,3,4,5,6,7,8,9,10,"J","Q","K"];
-  // const suits = ["S","H","C","D"];
-  const values = ["A",2];
-  const suits = ["S","H"];
+  // TODO: have it so that if the url is localhost then use the test values
+  let values, suits;
+  if (window.location.origin == "http://localhost:3000") {
+    console.log("hi", window.location.origin)
+    values = ["A",2];
+    suits = ["S","H"];
+  }
+  else {
+    values = ["A",2,3,4,5,6,7,8,9,10,"J","Q","K"];
+    suits = ["S","H","C","D"];
+  };
+
 	var deck = [];
 
 	for(var i = 0; i < suits.length; i++)
