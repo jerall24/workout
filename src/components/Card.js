@@ -16,9 +16,8 @@ const Card = ( { startOver, setStartOver, showRemainingCount } ) => {
   const [startTime, setStartTime] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(startTime);
   const [firstClickPressed, setFirstClickPressed] = useState(false);
-  const [testEnv, setTestEnv] = useState(window.location.origin === "http://localhost:3000")
+  let testEnv = window.location.origin === "http://localhost:3000";
   const timer = useRef(null);
-  const [showCount, setShowCount] = useState(false);
 
 
   const onClick = () => {
@@ -37,7 +36,7 @@ const Card = ( { startOver, setStartOver, showRemainingCount } ) => {
     }
   };
 
-  useEffect((startOver, firstClick) => {
+  useEffect(() => {
     let tempDeck = getDeck(testEnv);
     shuffle(tempDeck);
     var cards = [];
@@ -54,6 +53,9 @@ const Card = ( { startOver, setStartOver, showRemainingCount } ) => {
       setCurrentTime(new Date());
       setCurrentCard(backs[Math.floor(Math.random() * backs.length)]);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [startOver]);
 
   useEffect(() => {
@@ -84,11 +86,11 @@ const Card = ( { startOver, setStartOver, showRemainingCount } ) => {
         <img src={`${process.env.PUBLIC_URL}/images/${currentCard}.png`} alt={translateTag(currentCard, deck)[0]} />
       </div>
       <div style={{textAlign:"center"}} className="content">
-        <a className="header">{translateTag(currentCard, deck)[1]}</a>
-        <a> 
+        <p className="header">{translateTag(currentCard, deck)[1]}</p>
+        <p>
           {showRemainingCount ? `Remaining: ${deck.length} | ` : ""}
           Elapsed time: {format(addSeconds(new Date(0), differenceInSeconds(currentTime, startTime)), 'mm:ss')}
-        </a>
+        </p>
       </div>
     </div>
   );
@@ -100,7 +102,7 @@ function translateTag(tag, deck) {
       return ["deck", "Click on the card to start"];
     }
     else {
-      return ["deck", "It's over congrats!!!!"]
+      return ["deck", "Completed"]
     }
   }
 
